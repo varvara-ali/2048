@@ -1,6 +1,9 @@
 import pygame
 import copy
-from start_screen import Start_screen
+from start_screen import (Start_screen,
+                          WIDTH,
+                          HEIGHT
+                          )
 
 class Cell:
     def __init__(self, size, index_x, index_y, start_x, start_y):
@@ -85,7 +88,7 @@ class Board:
 
 if __name__ == '__main__':
     pygame.init()
-    size = width, height = 800, 800
+    size = WIDTH, HEIGHT
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
 
@@ -93,13 +96,33 @@ if __name__ == '__main__':
     fps = 60
 
     start_screen = Start_screen(screen)
-    start_screen.hello()
+    # start_screen.hello()
 
     running = True
     evolution_going = False
     start_screen_flag = True
-    
 
+    while start_screen_flag:  # цикл стартового экрана
+        # обработка событий
+        for event in pygame.event.get():
+            if start_screen.name.handle_event(event) or start_screen.start_button.handle_event(event):
+                start_screen_flag = False
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click_x, click_y = event.pos
+
+            start_screen.name.update()
+            start_screen.hello()
+            start_screen.name.draw(screen)
+            start_screen.start_button.draw(screen)
+
+
+        pygame.display.flip()
+        clock.tick(fps)
+
+    print("основной цикл")
     while running:  # Основной игровой цикл
         # обработка событий
         for event in pygame.event.get():
