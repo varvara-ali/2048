@@ -1,11 +1,6 @@
 import pygame
-import copy
-from start_screen import (Start_screen,
-                          WIDTH,
-                          HEIGHT
-                          )
+from start_screen import Start_screen, WIDTH, HEIGHT
 from db import Statistic
-
 
 if __name__ == '__main__':
     pygame.init()
@@ -19,6 +14,7 @@ if __name__ == '__main__':
     start_screen = Start_screen(screen)
     stat = Statistic()
     # start_screen.hello()
+    stat.create_db()
 
     running = True
     evolution_going = False
@@ -30,16 +26,13 @@ if __name__ == '__main__':
             if start_screen.name.handle_event(event) or start_screen.start_button.handle_event(event):
                 start_screen_flag = False
             if event.type == pygame.QUIT:
-                exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    click_x, click_y = event.pos
+                pygame.quit()
 
             start_screen.name.update()
             start_screen.hello()
             start_screen.name.draw(screen)
             start_screen.start_button.draw(screen)
-
+            start_screen.show_leaders(stat.get_leaders())
 
         pygame.display.flip()
         clock.tick(fps)
@@ -56,12 +49,10 @@ if __name__ == '__main__':
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                   pass
-
+                    pass
 
         # обновление экрана
-        #screen.fill(background_color)
-
+        # screen.fill(background_color)
 
         pygame.display.flip()
         clock.tick(fps)

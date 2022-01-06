@@ -6,9 +6,9 @@ class Statistic:
         self.conn = None
         try:
             self.conn = sqlite3.connect('stat')
-            print(sqlite3.version)
         except Exception as e:
             print(e)
+        self.create_db()
 
     def create_db(self):
         leaders_creation = """
@@ -23,17 +23,38 @@ class Statistic:
                         CREATE TABLE IF NOT EXISTS "account" (
                         "name" TEXT, "record" INTEGER)
                         """
-        cur = self.con.cursor()
-        result = cur.execute(leaders_creation)
-        result = cur.execute(session_table)
-        result = cur.execute(session_account)
-        self.con.commit()
+        cur = self.conn.cursor()
+        cur.execute(leaders_creation)
+        cur.execute(session_table)
+        cur.execute(session_account)
+        self.conn.commit()
+    def insert_dummy(self):
+        query = '''
+        insert into  leaders values ('test', 500, '2021-12-12'), ('test2', 600, '2021-12-24')
+        '''
+        cur = self.conn.cursor()
+        cur.execute(query)
+        self.conn.commit()
 
     def get_leaders(self, count=10):
+        list_leaders = f"""
+        SELECT * FROM leaders
+        ORDER BY record desc
+        limit {count}
+        """
+        cur = self.conn.cursor()
+        result = cur.execute(list_leaders)
+        # results = ["{:<20s}|{:>5d}|{:>10s} ".format(r[0], r[1], r[2]) for r in result.fetchall()]
+        return result.fetchall()
+
+    def save_session(self, name, score, table):
         pass
 
-    def save_sassion(self, name, score, table):
+    def load_session(self):
         pass
 
-    def load_sassion(self):
-        pass
+if __name__ == '__main__':
+    base = Statistic()
+    t = base.get_leaders()
+    print(t)
+

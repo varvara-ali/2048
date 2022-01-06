@@ -65,8 +65,5 @@ class Button(InputBox):
         return False
 
     def draw(self, screen):
-        # Blit the text.
-
-        # Blit the rect.
         pg.draw.rect(screen, self.color, self.rect)
         screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
