@@ -28,6 +28,7 @@ class Statistic:
         cur.execute(session_table)
         cur.execute(session_account)
         self.conn.commit()
+
     def insert_dummy(self):
         query = '''
         insert into  leaders values ('test', 500, '2021-12-12'), ('test2', 600, '2021-12-24')
@@ -52,6 +53,7 @@ class Statistic:
 
     def load_session(self):
         pass
+
 
 if __name__ == '__main__':
     base = Statistic()
