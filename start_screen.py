@@ -1,4 +1,3 @@
-from os.path import exists
 import pygame
 from input_box import InputBox, Button
 
@@ -25,10 +24,10 @@ def show_text(screen: pygame.Surface,
 
 
 class Start_screen:
-    def __init__(self, screen):
+    def __init__(self, screen, name):
         self.screen = screen
-        self.name = InputBox(270, 300, 140, 32, 'Варвара')
-        self.start_button = Button(270, 350, 140, 32, 'Новая игра')
+        self.name = InputBox(270, 300, 140, 32, name)
+        self.start_button = Button(270, 350, 140, 32, 'Играть')
 
     def hello(self):
         header = ['2048']
@@ -49,13 +48,10 @@ class Start_screen:
             return
         names = [list_leader[0] for list_leader in list_leaders]
         records = [str(list_leader[1]) for list_leader in list_leaders]
-        dates = [list_leader[2] for list_leader in list_leaders]
+        dates = [list_leader[2][:19] for list_leader in list_leaders]
         show_text(self.screen, names, 50, 500, 30)
         show_text(self.screen, records, 250, 500, 30)
         show_text(self.screen, dates, 450, 500, 30)
-
-
-
 
     def continue_game(self):
         pass

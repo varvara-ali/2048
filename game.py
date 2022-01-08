@@ -22,7 +22,11 @@ class Cell:
             256: pg.Color('#edcc61'),
             512: pg.Color('#edc850'),
             1024: pg.Color('#edc53f'),
-            2048: pg.Color('#3c3a32')
+            2048: pg.Color('#3c3a32'),
+            4096: pg.Color('#3c3a32'),
+            8192: pg.Color('#3c3a32'),
+            16384: pg.Color('#3c3a32'),
+            32768: pg.Color('#3c3a32')
         }
 
     def __bool__(self):
@@ -56,12 +60,14 @@ class Cell:
 
 
 class Table:
-    def __init__(self, initial_table=[]):
+    def __init__(self, initial_table=[], score=0):
+        self.score = score
         self.background_color = pg.Color('#bbada0')
         self.margin_top = 200
+        self.victory = False
         self.margin_left = 100
         if len(initial_table):
-            self.import_state(initial_table)
+            self.import_state(initial_table, score)
             return
         self.cells = [[Cell() for _ in range(4)] for _ in range(4)]
         self.new_turn()
@@ -74,7 +80,7 @@ class Table:
                 if not self.cells[i][j]:
                     empty_indexes.append((i, j))
         new_element_index = choice(empty_indexes)
-        self.cells[new_element_index[0]][new_element_index[1]] = Cell(2)
+        self.cells[new_element_index[0]][new_element_index[1]] = Cell(2) if randint(1, 10) <= 9 else Cell(4)
         if len(empty_indexes) == 1:
             return False
         return True
@@ -97,6 +103,7 @@ class Table:
                 if self.cells[i][j] == self.cells[i + 1][j] and self.cells[i][j]:
                     is_move = True
                     self.cells[i][j].value *= 2
+                    self.score += self.cells[i][j].value
                     for k in range(i + 1, 3):
                         self.cells[k][j] = self.cells[k + 1][j]
                     self.cells[3][j] = Cell(0)
@@ -120,6 +127,7 @@ class Table:
                 if self.cells[i][j] == self.cells[i - 1][j] and self.cells[i][j]:
                     is_move = True
                     self.cells[i][j].value *= 2
+                    self.score += self.cells[i][j].value
                     for k in range(i - 1, 0, - 1):
                         self.cells[k][j] = self.cells[k - 1][j]
                     self.cells[0][j] = Cell(0)
@@ -144,6 +152,7 @@ class Table:
                 if self.cells[i][j] == self.cells[i][j + 1] and self.cells[i][j]:
                     is_move = True
                     self.cells[i][j].value *= 2
+                    self.score += self.cells[i][j].value
                     for k in range(j + 1, 3):
                         self.cells[i][k] = self.cells[i][k + 1]
                     self.cells[i][3] = Cell(0)
@@ -168,6 +177,7 @@ class Table:
                 if self.cells[i][j] == self.cells[i][j - 1] and self.cells[i][j]:
                     is_move = True
                     self.cells[i][j].value *= 2
+                    self.score += self.cells[i][j].value
                     for k in range(j - 1, 0, -1):
                         self.cells[i][k] = self.cells[i][k - 1]
                     self.cells[i][0] = Cell(0)
@@ -195,31 +205,60 @@ class Table:
         for i in range(4):
             for j in range(4):
                 state.append(self.cells[i][j].value)
-        return state
+        return state, self.score
 
-    def import_state(self, state):
+    def import_state(self, state, score):
         self.cells = self.cells = [[Cell(state[i * 4 + j]) for j in range(4)] for i in range(4)]
+        self.score = score
 
     def check_possible_turn(self):
         state = self.export_state()
-        if t.up():
-            self.import_state(state)
+        if self.up():
+            self.import_state(*state)
             return True
-        if t.down():
-            self.import_state(state)
+        if self.down():
+            self.import_state(*state)
             return True
-        if t.left():
-            self.import_state(state)
+        if self.left():
+            self.import_state(*state)
             return True
-        if t.right():
-            self.import_state(state)
+        if self.right():
+            self.import_state(*state)
             return True
         return False
+
+    def check_victory(self):
+        for i in range(4):
+            for j in range(4):
+                if self.cells[i][j].value == 2048:
+                    return True
+        return False
+
+    def handle_event(self, event):
+        if event.type != pg.KEYDOWN:
+            return True
+        was_move = False
+        if event.key == pg.K_UP:
+            was_move = self.up()
+        if event.key == pg.K_DOWN:
+            was_move = self.down()
+        if event.key == pg.K_LEFT:
+            was_move = self.left()
+        if event.key == pg.K_RIGHT:
+            was_move = self.right()
+        if was_move:
+            if not self.victory:
+                self.victory = self.check_victory()
+            if not self.new_turn():  # последняя ячейка заполнилась
+                if not self.check_possible_turn():
+                    print('game over')
+                    return False
+        return True
 
 
 if __name__ == '__main__':
 
-    t = Table([0 if i % 4 else 2 for i in range(16)])
+    t = Table([2 ** ((i % 4) + 1) for i in range(16)])
     print(t)
     pg.init()
     size = 800, 1000
@@ -237,49 +276,9 @@ if __name__ == '__main__':
     while running:  # Основной игровой цикл
         # обработка событий
         for event in pg.event.get():
+            running = t.handle_event(event)
             if event.type == pg.QUIT:
                 running = False
-            if event.type == pg.KEYDOWN:
-                is_arrows = False
-                was_move = False
-                if event.key == pg.K_UP:
-                    is_arrows = True
-                    was_move = t.up()
-                if event.key == pg.K_DOWN:
-                    is_arrows = True
-                    was_move = t.down()
-                if event.key == pg.K_LEFT:
-                    is_arrows = True
-                    was_move = t.left()
-                if event.key == pg.K_RIGHT:
-                    is_arrows = True
-                    was_move = t.right()
-                print(was_move)
-                # if is_arrows and not was_move:
-                #     state = t.export_state()
-                #     if t.up():
-                #         t.import_state(state)
-                #         continue
-                #     if t.down():
-                #         t.import_state(state)
-                #         continue
-                #     if t.left():
-                #         t.import_state(state)
-                #         continue
-                #     if t.right():
-                #         t.import_state(state)
-                #         continue
-                #     print('Game over')
-                if was_move:
-                    new_turn_result = t.new_turn()
-                    print(new_turn_result)
-                    if not new_turn_result: #последняя ячейка заполнилась
-                        if not t.check_possible_turn():
-                            print('game over')
-                            running = False
-
-
-
         # обновление экрана
         screen.fill(pg.Color('#ffffff'))
 

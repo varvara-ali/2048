@@ -1,6 +1,8 @@
 import pygame
 from start_screen import Start_screen, WIDTH, HEIGHT
 from db import Statistic
+from game import Table
+from main_screen import Main_screen
 
 if __name__ == '__main__':
     pygame.init()
@@ -8,16 +10,14 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
 
-    background_color = 'black'
+    background_color = 'white'
     fps = 60
 
-    start_screen = Start_screen(screen)
     stat = Statistic()
-    # start_screen.hello()
-    stat.create_db()
+    start_name, start_board, start_score = stat.load_session()
+    start_screen = Start_screen(screen, start_name)
 
     running = True
-    evolution_going = False
     start_screen_flag = True
 
     while start_screen_flag:  # цикл стартового экрана
@@ -38,24 +38,34 @@ if __name__ == '__main__':
         clock.tick(fps)
 
     print("основной цикл")
-    while running:  # Основной игровой цикл
-        # обработка событий
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    click_x, click_y = event.pos
+    # start_board = [0,0,0,0,1024,1024,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    while True:
+        game = Main_screen(screen,
+                           name=start_screen.name.text,
+                           data=start_board,
+                           score=start_score,
+                           max_score=stat.get_record())
+        running = True
+        while running:  # Основной игровой цикл
+            # обработка событий
+            for event in pygame.event.get():
+                state = game.handle_event(event)
+                # новая игра
+                if state == 2:
+                    if not game.game_over:
+                        stat.save_leader(game.name, game.score)
+                    start_score = 0
+                    start_board = []
+                    running = False
+                if state == 1:
+                    stat.save_leader(game.name, game.score)
+                if event.type == pygame.QUIT:
+                    stat.save_leader(game.name, game.score)
+                    stat.save_session(*game.export_state())
+                    pygame.quit()
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    pass
-
-        # обновление экрана
-        # screen.fill(background_color)
-
-        pygame.display.flip()
-        clock.tick(fps)
-
-    # закрытие игры
-    pygame.quit()
+            # обновление экрана
+            screen.fill(pygame.Color("#faf8ef"))
+            game.content()
+            pygame.display.flip()
+            clock.tick(fps)
