@@ -64,7 +64,6 @@ class Main_screen:
         """
 
         move_result = self.board.handle_event(event)
-        print(self.victory_state)
         if self.victory_state == 0 and self.board.victory:
             self.victory_state = 1
         elif self.victory_state == 1 and self.board.victory and event.type == pygame.KEYDOWN:
