@@ -5,7 +5,7 @@ from game import Table
 
 
 class Main_screen:
-    def __init__(self, screen, name, data=[], score=0, max_score=0):
+    def __init__(self, screen, name, data, score=0, max_score=0):
         self.board = Table(data, score)
         self.victory_state = 0
         self.name = name
@@ -16,6 +16,10 @@ class Main_screen:
         self.game_over = False
 
     def content(self):
+        """
+        Вывод всего текста игры. Интро, правила, экран побуды и поражения
+        :return: text
+        """
         header = ['2048']
         intro_text = ["",
                       "Соединяйте числа, чтобы получить",
@@ -56,7 +60,7 @@ class Main_screen:
 
     def handle_event(self, event):
         """
-        :param event:
+        :param event: проверяются события победы и поражения ждя дальнейшей обработки
         :return:
         0 - ничего не надо делать
         1 - конец игры
@@ -76,6 +80,10 @@ class Main_screen:
         return 0
 
     def export_state(self):
+        """
+        Нужно для продолжения игры
+        :return: ник и состояние поля
+        """
         return self.name, *self.board.export_state()
 
 

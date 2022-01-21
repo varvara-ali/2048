@@ -12,6 +12,10 @@ class Statistic:
         self.create_db()
 
     def create_db(self):
+        """
+        Создаем базу данный с тремя таблицами
+        :return:
+        """
         leaders_creation = """
         CREATE TABLE IF NOT EXISTS "leaders" (
         "name"	TEXT, "record" INTEGER, "record_time" DATE)
@@ -30,15 +34,12 @@ class Statistic:
         cur.execute(session_account)
         self.conn.commit()
 
-    def insert_dummy(self):
-        query = '''
-        insert into  leaders values ('test', 500, '2021-12-12'), ('test2', 600, '2021-12-24')
-        '''
-        cur = self.conn.cursor()
-        cur.execute(query)
-        self.conn.commit()
-
     def get_leaders(self, count=10):
+        """
+        возвращаем сптсок из десяти лучших рекордов
+        :param count: int
+        :return: список лидеров
+        """
         list_leaders = f"""
         SELECT * FROM leaders
         ORDER BY record desc
@@ -46,10 +47,16 @@ class Statistic:
         """
         cur = self.conn.cursor()
         result = cur.execute(list_leaders)
-        # results = ["{:<20s}|{:>5d}|{:>10s} ".format(r[0], r[1], r[2]) for r in result.fetchall()]
         return result.fetchall()
 
     def save_session(self, name, table, score):
+        """
+        Удаляем старые данные и записываем состояние последней сессии
+        :param name: str
+        :param table: [ [] ]
+        :param score: int
+        :return:
+        """
         drop_table = 'DROP TABLE "board"'
         drop_account = 'DROP TABLE "account"'
         session_table = """
@@ -73,25 +80,33 @@ class Statistic:
         self.conn.commit()
 
     def load_session(self):
+        """
+        загружыем из табоиц информацию о последней сессии
+        :return:
+        """
         cur = self.conn.cursor()
         account_query = 'SELECT name, record from account'
         result = cur.execute(account_query)
         try:
             name, score = result.fetchall()[0]
-        except:
+        except Exception as e:
             name = ""
             score = 0
         board_query = 'SELECT value from board order by cell'
         result = cur.execute(board_query)
         try:
             board = [cell[0] for cell in result.fetchall()]
-        except:
+        except Exception as e:
             board = []
         return name, board, score
 
-
-
     def save_leader(self, name, score):
+        """
+        добавляем в таблицу информацию о новом рекорде
+        :param name: str
+        :param score: int
+        :return:
+        """
         cur_date = datetime.today()
         query = f'''
                 insert into  leaders values ('{name}', {score}, '{cur_date}')
@@ -101,6 +116,10 @@ class Statistic:
         self.conn.commit()
 
     def get_record(self):
+        """
+        берем последний рекорд из базы
+        :return: int
+        """
         query = '''
         SELECT record from leaders
         order by record DESC
@@ -110,7 +129,7 @@ class Statistic:
         result = cur.execute(query)
         try:
             return result.fetchall()[0][0]
-        except:
+        except Exception as e:
             return 0
 
 

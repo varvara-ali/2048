@@ -1,7 +1,6 @@
 import pygame
 from start_screen import Start_screen, WIDTH, HEIGHT
 from db import Statistic
-from game import Table
 from main_screen import Main_screen
 
 if __name__ == '__main__':
@@ -40,7 +39,6 @@ if __name__ == '__main__':
         pygame.display.flip()
         clock.tick(fps)
 
-    print("основной цикл")
     # start_board = [0,0,0,0,1024,1024,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     while True:
         game = Main_screen(screen,

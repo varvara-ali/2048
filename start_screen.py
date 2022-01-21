@@ -11,6 +11,16 @@ def show_text(screen: pygame.Surface,
               x: int, y: int,
               font_size: int = 30,
               font_color: pygame.Color = pygame.Color('#776e65')):
+    """
+    Функция, умеющая выводить текст. Очень удобно
+    :param screen: pygame.Surface
+    :param text: list
+    :param x: int
+    :param y: int
+    :param font_size: 30
+    :param font_color: pygame.Color('#776e65')
+    :return:
+    """
     font = pygame.font.Font(None, font_size)
     text_coord = y
     for line in text:
@@ -30,6 +40,10 @@ class Start_screen:
         self.start_button = Button(270, 350, 140, 32, 'Играть')
 
     def hello(self):
+        """
+        Стартовый текст
+        :return:
+        """
         header = ['2048']
         intro_text = ["",
                       "Правила игры",
@@ -42,6 +56,11 @@ class Start_screen:
         show_text(self.screen, name_input, 80, 300, 30, pygame.Color('#550055'))
 
     def show_leaders(self, list_leaders):
+        """
+        Вывод таблицы рекордов
+        :param list_leaders: list
+        :return:
+        """
         show_text(self.screen, ['Таблица рекордов'], 150, 450, 50, pygame.Color('#550000'))
         if len(list_leaders) == 0:
             show_text(self.screen, ['Рекордов нет'], 50, 500, 30)
@@ -53,5 +72,3 @@ class Start_screen:
         show_text(self.screen, records, 250, 500, 30)
         show_text(self.screen, dates, 450, 500, 30)
 
-    def continue_game(self):
-        pass

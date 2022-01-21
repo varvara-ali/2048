@@ -28,6 +28,7 @@ class Cell:
             16384: pg.Color('#3c3a32'),
             32768: pg.Color('#3c3a32')
         }
+    # переопределение нескольких базовых функций
 
     def __bool__(self):
         if self.value == 0:
@@ -45,6 +46,13 @@ class Cell:
         self.value = self.value * other
 
     def draw(self, screen, x, y):
+        """
+        отрисовка
+        :param screen: pygame.Surface
+        :param x: int
+        :param y: int
+        :return:
+        """
         fontsize = 70
         pg.draw.rect(screen,
                      self.colors[self.value],
@@ -74,6 +82,10 @@ class Table:
         self.new_turn()
 
     def new_turn(self):
+        """
+        Каждый раз на новом шаге создает квадратик с 2 или 4 (шанс последней 10%)
+        :return: True или False смотря сколько пустых ячеек осталось
+        """
         empty_indexes = []
         for i in range(4):
             for j in range(4):
@@ -85,6 +97,7 @@ class Table:
             return False
         return True
 
+    # обработка движения стрелок
     def up(self):
         is_move = False
         for i in range(3):
@@ -201,6 +214,10 @@ class Table:
                 self.cells[i][j].draw(screen, self.margin_left + j * CELL_SIZE, self.margin_top + i * CELL_SIZE)
 
     def export_state(self):
+        """
+        сохраняем текущюю таблицу и счет
+        :return:
+        """
         state = []
         for i in range(4):
             for j in range(4):
@@ -208,10 +225,20 @@ class Table:
         return state, self.score
 
     def import_state(self, state, score):
+        """
+        вставляем текущую таблицу и счет
+        :param state: [ [] ]
+        :param score: int
+        :return:
+        """
         self.cells = self.cells = [[Cell(state[i * 4 + j]) for j in range(4)] for i in range(4)]
         self.score = score
 
     def check_possible_turn(self):
+        """
+        проверяем возможен ли следующий ход
+        :return:
+        """
         state = self.export_state()
         if self.up():
             self.import_state(*state)
@@ -228,6 +255,10 @@ class Table:
         return False
 
     def check_victory(self):
+        """
+        проверяем выиграл ли игрок
+        :return: True or False
+        """
         for i in range(4):
             for j in range(4):
                 if self.cells[i][j].value == 2048:
@@ -235,6 +266,11 @@ class Table:
         return False
 
     def handle_event(self, event):
+        """
+        обработка всевозможных событий
+        :param event: тип события
+        :return: True or False
+        """
         if event.type != pg.KEYDOWN:
             return True
         was_move = False
@@ -251,7 +287,6 @@ class Table:
                 self.victory = self.check_victory()
             if not self.new_turn():  # последняя ячейка заполнилась
                 if not self.check_possible_turn():
-                    print('game over')
                     return False
         return True
 
@@ -265,13 +300,6 @@ if __name__ == '__main__':
     screen = pg.display.set_mode(size)
     clock = pg.time.Clock()
     running = True
-    # is_arrows = False
-    # was_move = False
-    # was_move = t.left()
-    # if was_move:
-    #     t.new_turn()
-    #
-    # exit()
 
     while running:  # Основной игровой цикл
         # обработка событий

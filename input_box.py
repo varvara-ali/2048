@@ -1,11 +1,10 @@
 import pygame as pg
 
-COLOR_INACTIVE = pg.Color('lightskyblue3')
-COLOR_ACTIVE = pg.Color('dodgerblue2')
+COLOR_INACTIVE = pg.Color('#776e65')
+COLOR_ACTIVE = pg.Color('#faf8ef')
 
 
 class InputBox:
-
     def __init__(self, x, y, w, h, text=''):
         self.rect = pg.Rect(x, y, w, h)
         self.color = COLOR_INACTIVE
@@ -14,6 +13,11 @@ class InputBox:
         self.active = False
 
     def handle_event(self, event):
+        """
+        проверка всевозможных событий
+        :param event:
+        :return:
+        """
         if event.type == pg.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
@@ -40,7 +44,10 @@ class InputBox:
         return False
 
     def update(self):
-        # Resize the box if the text is too long.
+        """
+        ограничение длины поля ввода
+        :return:
+        """
         width = max(200, self.txt_surface.get_width() + 10)
         self.rect.w = width
 
@@ -57,8 +64,12 @@ class Button(InputBox):
         self.txt_surface = pg.font.Font(None, 32).render(text, True, COLOR_ACTIVE)
 
     def handle_event(self, event):
+        """
+        если игрок кликнул в полу ввода, то оно изменит цвет
+        :param event:
+        :return: True or False
+        """
         if event.type == pg.MOUSEBUTTONDOWN:
-            # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
                 self.color = COLOR_ACTIVE
                 return True
