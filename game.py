@@ -1,4 +1,7 @@
 import pygame as pg
+import pygame.mixer
+from os import path
+
 from start_screen import show_text
 from random import choice, randint
 
@@ -68,7 +71,10 @@ class Cell:
 
 
 class Table:
-    def __init__(self, initial_table=[], score=0):
+    def __init__(self, initial_table, score=0):
+        snd_dir = path.join(path.dirname(__file__))
+        self.sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.mp3'))
+        self.sound.set_volume(0.4)
         self.score = score
         self.background_color = pg.Color('#bbada0')
         self.margin_top = 200
@@ -116,6 +122,7 @@ class Table:
                 if self.cells[i][j] == self.cells[i + 1][j] and self.cells[i][j]:
                     is_move = True
                     self.cells[i][j].value *= 2
+                    self.sound.play()
                     self.score += self.cells[i][j].value
                     for k in range(i + 1, 3):
                         self.cells[k][j] = self.cells[k + 1][j]
@@ -140,6 +147,7 @@ class Table:
                 if self.cells[i][j] == self.cells[i - 1][j] and self.cells[i][j]:
                     is_move = True
                     self.cells[i][j].value *= 2
+                    self.sound.play()
                     self.score += self.cells[i][j].value
                     for k in range(i - 1, 0, - 1):
                         self.cells[k][j] = self.cells[k - 1][j]
@@ -165,6 +173,7 @@ class Table:
                 if self.cells[i][j] == self.cells[i][j + 1] and self.cells[i][j]:
                     is_move = True
                     self.cells[i][j].value *= 2
+                    self.sound.play()
                     self.score += self.cells[i][j].value
                     for k in range(j + 1, 3):
                         self.cells[i][k] = self.cells[i][k + 1]
@@ -190,6 +199,7 @@ class Table:
                 if self.cells[i][j] == self.cells[i][j - 1] and self.cells[i][j]:
                     is_move = True
                     self.cells[i][j].value *= 2
+                    self.sound.play()
                     self.score += self.cells[i][j].value
                     for k in range(j - 1, 0, -1):
                         self.cells[i][k] = self.cells[i][k - 1]

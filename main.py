@@ -7,6 +7,7 @@ if __name__ == '__main__':
     pygame.mixer.init()
     pygame.mixer.music.load('music_fone.mp3')
     pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.8)
     pygame.init()
     size = WIDTH, HEIGHT
     screen = pygame.display.set_mode(size)

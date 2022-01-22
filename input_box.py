@@ -1,7 +1,7 @@
 import pygame as pg
 
-COLOR_INACTIVE = pg.Color('#776e65')
-COLOR_ACTIVE = pg.Color('#faf8ef')
+COLOR_INACTIVE = pg.Color('#bbada0')
+COLOR_ACTIVE = pg.Color('#776e65')
 
 
 class InputBox:
