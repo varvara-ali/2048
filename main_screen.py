@@ -85,10 +85,3 @@ class Main_screen:
         :return: ник и состояние поля
         """
         return self.name, *self.board.export_state()
-
-
-
-
-
-
-
